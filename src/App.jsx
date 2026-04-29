@@ -761,18 +761,7 @@ export default function GlamPost() {
                 {isPro ? "Acceso Pro activo · Generaciones ilimitadas" : usesLeft > 0 ? `${usesLeft} uso${usesLeft!==1?"s":""} gratis restante${usesLeft!==1?"s":""}` : "Sin usos gratis · Activa Pro"}
               </span>
             </div>
-            <div style={{textAlign:"center",marginBottom:16}}>
-              {!isDemo ? (
-                <button onClick={()=>{setIsDemo(true);setIsPro(true);}} style={{background:"transparent",border:"1px dashed rgba(255,255,255,0.15)",borderRadius:100,padding:"5px 16px",color:"rgba(255,255,255,0.25)",fontSize:10,fontFamily:"'Syne',sans-serif",fontWeight:700,letterSpacing:2,textTransform:"uppercase",cursor:"pointer"}}>
-                  🔓 Modo demo
-                </button>
-              ) : (
-                <div style={{display:"inline-flex",alignItems:"center",gap:10,padding:"6px 16px",borderRadius:100,background:"rgba(109,219,133,0.1)",border:"1px solid rgba(109,219,133,0.3)"}}>
-                  <span style={{fontSize:10,color:"#6ddb85",fontFamily:"'Syne',sans-serif",fontWeight:700,letterSpacing:2,textTransform:"uppercase"}}>✓ Demo activo — Pro simulado</span>
-                  <button onClick={()=>{setIsDemo(false);setIsPro(false);}} style={{background:"transparent",border:"none",color:"rgba(109,219,133,0.6)",fontSize:12,cursor:"pointer",padding:0}}>✕</button>
-                </div>
-              )}
-            </div>
+
             <div className="card">
               <div className="card-title">✦ Datos de tu salón</div>
               <div className="fields">
