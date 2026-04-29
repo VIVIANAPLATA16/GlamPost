@@ -545,12 +545,14 @@ export default function GlamPost() {
   const [streamText, setStreamText] = useState("");
   const [isStreaming, setIsStreaming] = useState(false);
   const [isDemo, setIsDemo] = useState(false);
+  const isDemoUrl = typeof window !== "undefined" && new URLSearchParams(window.location.search).get("demo") === "viviana";
   const abortRef = useRef(null);
 
   useEffect(() => {
     const saved = parseInt(localStorage.getItem("gp_uses")||"0", 10);
     const pro = localStorage.getItem("gp_pro") === "true";
-    setUses(saved); setIsPro(pro);
+    const demoParam = new URLSearchParams(window.location.search).get("demo") === "viviana";
+    setUses(saved); setIsPro(pro || demoParam); if(demoParam) setIsDemo(true);
   }, []);
 
   const onChange = e => setForm(f => ({ ...f, [e.target.name]: e.target.value }));
