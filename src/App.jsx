@@ -221,10 +221,15 @@ const TEMAS_DIA = [
 ];
 
 async function callClaudeStream(prompt, onChunk, signal) {
-  const res = await fetch("https://api.anthropic.com/v1/messages", {
+  const endpoint = import.meta.env.VITE_AZURE_OPENAI_ENDPOINT;
+  const apiKey = import.meta.env.VITE_AZURE_OPENAI_KEY;
+  const deployment = import.meta.env.VITE_AZURE_OPENAI_DEPLOYMENT;
+  const url = `${endpoint}openai/deployments/${deployment}/chat/completions?api-version=2024-02-01`;
+
+  const res = await fetch(url, {
     method: "POST", signal,
-    headers: { "Content-Type": "application/json", "x-api-key": import.meta.env.VITE_ANTHROPIC_API_KEY, "anthropic-version": "2023-06-01", "anthropic-dangerous-direct-browser-access": "true" },
-    body: JSON.stringify({ model: "claude-sonnet-4-20250514", max_tokens: 1000, stream: true, messages: [{ role: "user", content: prompt }] }),
+    headers: { "Content-Type": "application/json", "api-key": apiKey },
+    body: JSON.stringify({ messages: [{ role: "user", content: prompt }], max_tokens: 1000, stream: true }),
   });
   if (!res.ok) throw new Error("API error");
   const reader = res.body.getReader();
@@ -242,20 +247,26 @@ async function callClaudeStream(prompt, onChunk, signal) {
       if (data === "[DONE]") return;
       try {
         const parsed = JSON.parse(data);
-        if (parsed.type === "content_block_delta" && parsed.delta?.text) onChunk(parsed.delta.text);
+        const text = parsed.choices?.[0]?.delta?.content;
+        if (text) onChunk(text);
       } catch {}
     }
   }
 }
 
 async function callClaude(prompt) {
-  const res = await fetch("https://api.anthropic.com/v1/messages", {
+  const endpoint = import.meta.env.VITE_AZURE_OPENAI_ENDPOINT;
+  const apiKey = import.meta.env.VITE_AZURE_OPENAI_KEY;
+  const deployment = import.meta.env.VITE_AZURE_OPENAI_DEPLOYMENT;
+  const url = `${endpoint}openai/deployments/${deployment}/chat/completions?api-version=2024-02-01`;
+
+  const res = await fetch(url, {
     method: "POST",
-    headers: { "Content-Type": "application/json", "x-api-key": import.meta.env.VITE_ANTHROPIC_API_KEY, "anthropic-version": "2023-06-01", "anthropic-dangerous-direct-browser-access": "true" },
-    body: JSON.stringify({ model: "claude-sonnet-4-20250514", max_tokens: 1000, messages: [{ role: "user", content: prompt }] }),
+    headers: { "Content-Type": "application/json", "api-key": apiKey },
+    body: JSON.stringify({ messages: [{ role: "user", content: prompt }], max_tokens: 1000 }),
   });
   const data = await res.json();
-  return data.content?.[0]?.text || "";
+  return data.choices?.[0]?.message?.content || "";
 }
 
 function buildPostsPrompt({ salon, especialidad, servicio, promo, tono }) {
