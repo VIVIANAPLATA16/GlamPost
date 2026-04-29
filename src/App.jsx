@@ -33,7 +33,7 @@ const css = `
   .badge { display:inline-flex; align-items:center; gap:8px; padding:6px 18px; border-radius:100px; border:1px solid rgba(255,60,172,0.4); background:rgba(255,60,172,0.1); font-size:10px; font-weight:600; letter-spacing:3px; text-transform:uppercase; color:var(--pink2); margin-bottom:28px; }
   .badge-dot { width:6px; height:6px; border-radius:50%; background:var(--pink); animation:blink 1.5s infinite; }
   @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
-  .hero-glow-text { font-family:'Syne',sans-serif; font-size:clamp(44px,8.5vw,100px); font-weight:800; line-height:1.1; letter-spacing:-1px; margin-bottom:20px; background:linear-gradient(135deg,#FF3CAC 0%,#FF6BD6 30%,#784BA0 60%,#2B86C5 100%); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; filter:drop-shadow(0 0 30px rgba(255,60,172,0.25)); display:block; width:100%; }
+  .hero-glow-text { font-family:'Syne',sans-serif; font-size:clamp(44px,8.5vw,72px); font-weight:800; line-height:1.1; letter-spacing:-1px; margin-bottom:20px; background:linear-gradient(135deg,#FF3CAC 0%,#FF6BD6 30%,#784BA0 60%,#2B86C5 100%); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; filter:drop-shadow(0 0 30px rgba(255,60,172,0.25)); display:block; width:100%; }
   .hero-title { font-family:'Syne',sans-serif; font-size:clamp(24px,4.5vw,46px); font-weight:800; line-height:1.1; margin-bottom:20px; color:var(--white); }
   .hero-title .grad { background:linear-gradient(135deg,#FF3CAC,#FFD700); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
   .hero-sub { font-size:16px; color:var(--muted); max-width:560px; margin:0 auto 36px; line-height:1.7; }
