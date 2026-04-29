@@ -265,11 +265,25 @@ const css = `
   @media(max-width:700px){
     .benefits{grid-template-columns:1fr} .pricing-grid{grid-template-columns:1fr}
     .fields{grid-template-columns:1fr} .field-full{grid-column:1}
-    .card{padding:24px 18px} .wrap{padding:40px 16px 60px}
-    .hero-ctas{flex-direction:column;align-items:center}
+    .card{padding:24px 18px} .wrap{padding:24px 14px 80px}
+    .hero-ctas{flex-direction:column;align-items:stretch}
     .cal-dia{grid-template-columns:60px 1fr;}
     .modal{padding:32px 20px} .modal-plans{grid-template-columns:1fr}
     .wsp-grid{grid-template-columns:1fr} .wsp-form-row{flex-direction:column}
+    .hero-glow-text{font-size:clamp(36px,10vw,56px)!important}
+    .proof-row{flex-wrap:wrap;gap:16px;justify-content:center}
+    .proof-divider{display:none}
+    .tabs{overflow-x:auto;-webkit-overflow-scrolling:touch;flex-wrap:nowrap;padding-bottom:4px}
+    .tab{white-space:nowrap;flex-shrink:0}
+    .feature-banner{flex-direction:column;gap:12px}
+    .btn-generate,.btn-gold,.btn-hero-secondary{font-size:13px;padding:16px}
+    .section-title{font-size:clamp(22px,6vw,36px)!important}
+    body{-webkit-tap-highlight-color:transparent}
+    input,select,textarea{font-size:16px!important}
+  }
+  @media(max-width:400px){
+    .wrap{padding:16px 12px 80px}
+    .card{padding:20px 14px}
   }
 `;
 
