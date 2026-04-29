@@ -315,53 +315,40 @@ const TEMAS_DIA = [
   { tema:"Educación", emoji:"💎", idea:"Tip de cuidado en casa para tus clientas" },
 ];
 
-async function callClaudeStream(prompt, onChunk, signal) {
-  const endpoint = import.meta.env.VITE_AZURE_OPENAI_ENDPOINT;
-  const apiKey = import.meta.env.VITE_AZURE_OPENAI_KEY;
-  const deployment = import.meta.env.VITE_AZURE_OPENAI_DEPLOYMENT;
-  const url = `${endpoint}openai/deployments/${deployment}/chat/completions?api-version=2024-02-01`;
+const BACKEND_URL = "https://glampost-backend-fcb2awf3h5fpewcf.eastus-01.azurewebsites.net/api";
 
-  const res = await fetch(url, {
+function getUserId() {
+  let uid = localStorage.getItem("gp_uid");
+  if (!uid) { uid = "u_" + Math.random().toString(36).slice(2) + Date.now(); localStorage.setItem("gp_uid", uid); }
+  return uid;
+}
+
+async function callClaudeStream(prompt, onChunk, signal) {
+  const res = await fetch(`${BACKEND_URL}/generate`, {
     method: "POST", signal,
-    headers: { "Content-Type": "application/json", "api-key": apiKey },
-    body: JSON.stringify({ messages: [{ role: "user", content: prompt }], max_tokens: 1000, stream: true }),
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ prompt, userId: getUserId(), isFreeUse: true }),
   });
-  if (!res.ok) throw new Error("API error");
-  const reader = res.body.getReader();
-  const decoder = new TextDecoder();
-  let buffer = "";
-  while (true) {
-    const { done, value } = await reader.read();
-    if (done) break;
-    buffer += decoder.decode(value, { stream: true });
-    const lines = buffer.split("\n");
-    buffer = lines.pop();
-    for (const line of lines) {
-      if (!line.startsWith("data:")) continue;
-      const data = line.slice(5).trim();
-      if (data === "[DONE]") return;
-      try {
-        const parsed = JSON.parse(data);
-        const text = parsed.choices?.[0]?.delta?.content;
-        if (text) onChunk(text);
-      } catch {}
-    }
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.error || "Error del servidor");
   }
+  const data = await res.json();
+  onChunk(data.content);
 }
 
 async function callClaude(prompt) {
-  const endpoint = import.meta.env.VITE_AZURE_OPENAI_ENDPOINT;
-  const apiKey = import.meta.env.VITE_AZURE_OPENAI_KEY;
-  const deployment = import.meta.env.VITE_AZURE_OPENAI_DEPLOYMENT;
-  const url = `${endpoint}openai/deployments/${deployment}/chat/completions?api-version=2024-02-01`;
-
-  const res = await fetch(url, {
+  const res = await fetch(`${BACKEND_URL}/generate`, {
     method: "POST",
-    headers: { "Content-Type": "application/json", "api-key": apiKey },
-    body: JSON.stringify({ messages: [{ role: "user", content: prompt }], max_tokens: 1000 }),
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ prompt, userId: getUserId(), isFreeUse: true }),
   });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.error || "Error del servidor");
+  }
   const data = await res.json();
-  return data.choices?.[0]?.message?.content || "";
+  return data.content || "";
 }
 
 function buildPostsPrompt({ salon, especialidad, servicio, promo, tono }) {
