@@ -713,7 +713,7 @@ export default function GlamPost() {
           </div>
 
           <div className="benefits">
-            {[{icon:"🤖",title:"IA Real integrada",desc:"Powered by Claude. Contenido auténtico y personalizado."},{icon:"📅",title:"Calendario 30 días",desc:"Un mes completo de contenido temático listo para programar."},{icon:"🎨",title:"Prompts Canva IA",desc:"Genera las fotos perfectas con IA. Sin fotógrafo."}].map(b=>(
+            {[{icon:"🤖",title:"IA Real integrada",desc:"Powered by GlamCode AI. Contenido auténtico y personalizado."},{icon:"📅",title:"Calendario 30 días",desc:"Un mes completo de contenido temático listo para programar."},{icon:"🎨",title:"Prompts Canva IA",desc:"Genera las fotos perfectas con IA. Sin fotógrafo."}].map(b=>(
               <div key={b.title} className="benefit-card"><div className="benefit-icon">{b.icon}</div><div className="benefit-title">{b.title}</div><div className="benefit-desc">{b.desc}</div></div>
             ))}
           </div>
@@ -752,7 +752,7 @@ export default function GlamPost() {
           <div id="generador">
             <div className="section-label">Generador con IA Real</div>
             <div className="section-title">GLAMPOST</div>
-            <div className="section-sub">Powered by Claude · Contenido personalizado · Listo para publicar</div>
+            <div className="section-sub">Powered by GlamCode AI · Contenido personalizado · Listo para publicar</div>
             <div className="uses-counter">
               <div className="uses-dots">
                 {isPro ? <span style={{fontSize:14}}>⭐</span> : Array.from({length:CONFIG.FREE_USES}).map((_,i)=><div key={i} className={`uses-dot${i<uses?" used":""}`}/>)}
