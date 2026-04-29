@@ -59,7 +59,7 @@ function ContactoPage({ onBack }) {
         {[
           {emoji:"📧",title:"Soporte técnico",desc:"Para problemas con la app o tu cuenta",link:"mailto:soporte@glampost.co",label:"soporte@glampost.co"},
           {emoji:"💼",title:"Ventas y planes",desc:"Para conocer más sobre nuestros planes Pro",link:"mailto:contact@glampost.co",label:"contact@glampost.co"},
-          {emoji:"💬",title:"WhatsApp",desc:"Respuesta rápida en horario laboral (Lun-Vie 9am-6pm)",link:"https://wa.me/573000000000",label:"Escríbenos por WhatsApp"},
+          {emoji:"💬",title:"WhatsApp",desc:"Respuesta rápida en horario laboral (Lun-Vie 9am-6pm)",link:"https://wa.me/573134191320",label:"Escríbenos por WhatsApp"},
           {emoji:"📍",title:"Ubicación",desc:"Operamos desde Colombia para todo el país",link:null,label:"Colombia 🇨🇴"},
         ].map(({emoji,title,desc,link,label}) => (
           <div key={title} style={{background:"rgba(255,255,255,0.04)",border:"1px solid rgba(255,255,255,0.08)",borderRadius:16,padding:"24px 28px",display:"flex",gap:20,alignItems:"flex-start"}}>
