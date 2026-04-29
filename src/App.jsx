@@ -518,9 +518,6 @@ const ALL_TABS = [
 
 export default function GlamPost() {
   const [page, setPage] = useState("home");
-  if (page === "terminos") return <TerminosPage onBack={() => setPage("home")} />;
-  if (page === "privacidad") return <PrivacidadPage onBack={() => setPage("home")} />;
-  if (page === "contacto") return <ContactoPage onBack={() => setPage("home")} />;
   const [form, setForm] = useState({ salon:"", especialidad:"", servicio:"", promo:"", tono:"profesional y cálido" });
   const [loading, setLoading] = useState(false);
   const [loadingStep, setLoadingStep] = useState("");
@@ -660,6 +657,10 @@ export default function GlamPost() {
       );
     }
   };
+
+  if (page === "terminos") return <TerminosPage onBack={() => setPage("home")} />;
+  if (page === "privacidad") return <PrivacidadPage onBack={() => setPage("home")} />;
+  if (page === "contacto") return <ContactoPage onBack={() => setPage("home")} />;
 
   return (
     <>
