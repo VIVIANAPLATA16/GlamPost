@@ -1,5 +1,86 @@
 import { useState, useEffect, useRef } from "react";
 
+function TerminosPage({ onBack }) {
+  return (
+    <div style={{minHeight:"100vh",background:"#0A0A0F",color:"#fff",fontFamily:"'Inter',sans-serif",padding:"40px 20px",maxWidth:720,margin:"0 auto"}}>
+      <button onClick={onBack} style={{background:"none",border:"1px solid rgba(255,255,255,0.15)",color:"#FF6BD6",borderRadius:10,padding:"8px 18px",cursor:"pointer",marginBottom:32,fontSize:13}}>← Volver</button>
+      <h1 style={{fontFamily:"'Syne',sans-serif",fontSize:32,fontWeight:800,background:"linear-gradient(135deg,#FF3CAC,#FFD700)",WebkitBackgroundClip:"text",WebkitTextFillColor:"transparent",marginBottom:8}}>Términos de Servicio</h1>
+      <p style={{color:"rgba(255,255,255,0.4)",fontSize:13,marginBottom:40}}>Última actualización: abril 2026</p>
+      {[
+        ["1. Aceptación de los términos","Al acceder y usar GlamPost, aceptas estos términos de servicio. Si no estás de acuerdo, por favor no uses nuestra plataforma."],
+        ["2. Descripción del servicio","GlamPost es una plataforma de generación de contenido con inteligencia artificial para salones de belleza en Colombia. Generamos posts para Instagram, stories, calendarios de contenido y prompts de diseño personalizados para tu negocio."],
+        ["3. Planes y pagos","Ofrecemos un plan gratuito con 3 generaciones y planes de pago mensuales ($19.900 y $29.900 COP). Los pagos se procesan a través de Wompi de forma segura. Las suscripciones se renuevan mensualmente y puedes cancelar en cualquier momento."],
+        ["4. Uso aceptable","Te comprometes a usar GlamPost únicamente para fines legales y legítimos relacionados con tu negocio de belleza. No está permitido el uso de la plataforma para generar contenido ofensivo, engañoso o que viole derechos de terceros."],
+        ["5. Propiedad intelectual","El contenido generado por IA es tuyo para usar libremente en tu negocio. GlamPost retiene los derechos sobre la plataforma, el diseño y la tecnología subyacente."],
+        ["6. Limitación de responsabilidad","GlamPost proporciona el servicio tal como está. No garantizamos resultados específicos de negocio derivados del uso del contenido generado."],
+        ["7. Modificaciones","Podemos actualizar estos términos ocasionalmente. Te notificaremos sobre cambios significativos por correo electrónico o mediante un aviso en la plataforma."],
+        ["8. Contacto","Para preguntas sobre estos términos: soporte@glampost.co"],
+      ].map(([title, text]) => (
+        <div key={title} style={{marginBottom:32}}>
+          <h2 style={{fontSize:17,fontWeight:700,color:"#FF6BD6",marginBottom:10}}>{title}</h2>
+          <p style={{color:"rgba(255,255,255,0.65)",fontSize:15,lineHeight:1.8}}>{text}</p>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function PrivacidadPage({ onBack }) {
+  return (
+    <div style={{minHeight:"100vh",background:"#0A0A0F",color:"#fff",fontFamily:"'Inter',sans-serif",padding:"40px 20px",maxWidth:720,margin:"0 auto"}}>
+      <button onClick={onBack} style={{background:"none",border:"1px solid rgba(255,255,255,0.15)",color:"#FF6BD6",borderRadius:10,padding:"8px 18px",cursor:"pointer",marginBottom:32,fontSize:13}}>← Volver</button>
+      <h1 style={{fontFamily:"'Syne',sans-serif",fontSize:32,fontWeight:800,background:"linear-gradient(135deg,#FF3CAC,#FFD700)",WebkitBackgroundClip:"text",WebkitTextFillColor:"transparent",marginBottom:8}}>Política de Privacidad</h1>
+      <p style={{color:"rgba(255,255,255,0.4)",fontSize:13,marginBottom:40}}>Última actualización: abril 2026 · Ley 1581 de 2012 (Colombia)</p>
+      {[
+        ["1. Responsable del tratamiento","GlamPost es responsable del tratamiento de tus datos personales. Puedes contactarnos en soporte@glampost.co para cualquier consulta relacionada con tu información."],
+        ["2. Datos que recopilamos","Recopilamos el nombre de tu salón, especialidad, servicios y promociones que ingresas para generar contenido. Si tienes plan Pro, también procesamos tu número de WhatsApp para el envío de contenido. Los pagos son procesados directamente por Wompi y no almacenamos datos de tarjetas."],
+        ["3. Uso de tus datos","Usamos tus datos exclusivamente para generar contenido personalizado con IA para tu salón, enviarte el contenido por WhatsApp si tienes plan Pro, y mejorar nuestro servicio. No vendemos ni compartimos tus datos con terceros para fines comerciales."],
+        ["4. Ley 1581 de 2012","De acuerdo con la ley colombiana de protección de datos personales, tienes derecho a conocer, actualizar y rectificar tus datos; solicitar prueba de la autorización; ser informado sobre el uso de tus datos; presentar quejas ante la Superintendencia de Industria y Comercio; y revocar la autorización y solicitar la supresión de tus datos."],
+        ["5. Retención de datos","Conservamos tus datos mientras tengas una cuenta activa. Si cancelas tu suscripción, eliminamos tus datos personales en un plazo de 30 días."],
+        ["6. Cookies","Usamos cookies técnicas esenciales para el funcionamiento de la plataforma. No usamos cookies de rastreo publicitario."],
+        ["7. Ejercicio de derechos","Para ejercer tus derechos escríbenos a soporte@glampost.co con el asunto Protección de datos. Responderemos en un plazo máximo de 10 días hábiles."],
+      ].map(([title, text]) => (
+        <div key={title} style={{marginBottom:32}}>
+          <h2 style={{fontSize:17,fontWeight:700,color:"#FF6BD6",marginBottom:10}}>{title}</h2>
+          <p style={{color:"rgba(255,255,255,0.65)",fontSize:15,lineHeight:1.8}}>{text}</p>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function ContactoPage({ onBack }) {
+  return (
+    <div style={{minHeight:"100vh",background:"#0A0A0F",color:"#fff",fontFamily:"'Inter',sans-serif",padding:"40px 20px",maxWidth:720,margin:"0 auto"}}>
+      <button onClick={onBack} style={{background:"none",border:"1px solid rgba(255,255,255,0.15)",color:"#FF6BD6",borderRadius:10,padding:"8px 18px",cursor:"pointer",marginBottom:32,fontSize:13}}>← Volver</button>
+      <h1 style={{fontFamily:"'Syne',sans-serif",fontSize:32,fontWeight:800,background:"linear-gradient(135deg,#FF3CAC,#FFD700)",WebkitBackgroundClip:"text",WebkitTextFillColor:"transparent",marginBottom:8}}>Contacto</h1>
+      <p style={{color:"rgba(255,255,255,0.4)",fontSize:13,marginBottom:40}}>Estamos aquí para ayudarte 💅</p>
+      <div style={{display:"grid",gap:20}}>
+        {[
+          {emoji:"📧",title:"Soporte técnico",desc:"Para problemas con la app o tu cuenta",link:"mailto:soporte@glampost.co",label:"soporte@glampost.co"},
+          {emoji:"💼",title:"Ventas y planes",desc:"Para conocer más sobre nuestros planes Pro",link:"mailto:contact@glampost.co",label:"contact@glampost.co"},
+          {emoji:"💬",title:"WhatsApp",desc:"Respuesta rápida en horario laboral (Lun-Vie 9am-6pm)",link:"https://wa.me/573000000000",label:"Escríbenos por WhatsApp"},
+          {emoji:"📍",title:"Ubicación",desc:"Operamos desde Colombia para todo el país",link:null,label:"Colombia 🇨🇴"},
+        ].map(({emoji,title,desc,link,label}) => (
+          <div key={title} style={{background:"rgba(255,255,255,0.04)",border:"1px solid rgba(255,255,255,0.08)",borderRadius:16,padding:"24px 28px",display:"flex",gap:20,alignItems:"flex-start"}}>
+            <span style={{fontSize:28}}>{emoji}</span>
+            <div>
+              <div style={{fontWeight:700,fontSize:16,marginBottom:4}}>{title}</div>
+              <div style={{color:"rgba(255,255,255,0.5)",fontSize:13,marginBottom:10}}>{desc}</div>
+              {link ? <a href={link} style={{color:"#FF6BD6",fontSize:14,textDecoration:"none",fontWeight:600}}>{label}</a> : <span style={{color:"rgba(255,255,255,0.6)",fontSize:14}}>{label}</span>}
+            </div>
+          </div>
+        ))}
+      </div>
+      <div style={{marginTop:40,padding:"24px",background:"rgba(255,60,172,0.07)",border:"1px solid rgba(255,60,172,0.2)",borderRadius:16,textAlign:"center"}}>
+        <p style={{color:"rgba(255,255,255,0.6)",fontSize:14,lineHeight:1.8}}>Tiempo de respuesta: <strong style={{color:"#FF6BD6"}}>menos de 24 horas</strong> en días hábiles.</p>
+      </div>
+    </div>
+  );
+}
+
+
+
 const CONFIG = {
   FREE_USES: 3,
   WOMPI_LINK: "https://checkout.wompi.co/l/TN9fuP",
@@ -436,6 +517,10 @@ const ALL_TABS = [
 ];
 
 export default function GlamPost() {
+  const [page, setPage] = useState("home");
+  if (page === "terminos") return <TerminosPage onBack={() => setPage("home")} />;
+  if (page === "privacidad") return <PrivacidadPage onBack={() => setPage("home")} />;
+  if (page === "contacto") return <ContactoPage onBack={() => setPage("home")} />;
   const [form, setForm] = useState({ salon:"", especialidad:"", servicio:"", promo:"", tono:"profesional y cálido" });
   const [loading, setLoading] = useState(false);
   const [loadingStep, setLoadingStep] = useState("");
@@ -735,6 +820,11 @@ export default function GlamPost() {
           <div className="footer">
             <div className="footer-logo">GlamPost</div>
             <div className="footer-text">IA para salones que crecen · Colombia 🇨🇴 · 2026</div>
+            <div style={{marginTop:16,display:"flex",gap:20,justifyContent:"center",flexWrap:"wrap"}}>
+              <button onClick={() => setPage("terminos")} style={{background:"none",border:"none",color:"rgba(255,255,255,0.35)",fontSize:12,cursor:"pointer",textDecoration:"underline"}}>Términos de servicio</button>
+              <button onClick={() => setPage("privacidad")} style={{background:"none",border:"none",color:"rgba(255,255,255,0.35)",fontSize:12,cursor:"pointer",textDecoration:"underline"}}>Política de privacidad</button>
+              <button onClick={() => setPage("contacto")} style={{background:"none",border:"none",color:"rgba(255,255,255,0.35)",fontSize:12,cursor:"pointer",textDecoration:"underline"}}>Contacto</button>
+            </div>
           </div>
         </div>
       </div>
