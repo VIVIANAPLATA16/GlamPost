@@ -637,6 +637,9 @@ export default function GlamPost() {
       await callClaudeStream(buildPostsPrompt(form), chunk => { postsRaw += chunk; setStreamText(postsRaw); }, abortRef.current.signal);
       setIsStreaming(false);
       const posts = parsePostsResponse(postsRaw);
+      setLoadingStep("🎵 Generando scripts TikTok...");
+      const tiktoks = parseTikTokResponse(await callClaude(buildTikTokPrompt(form)));
+      setTiktokContent(tiktoks);
       setLoadingStep("⭕ Creando stories...");
       const stories = parseStoriesResponse(await callClaude(buildStoriesPrompt(form)));
       setLoadingStep("💬 Generando respuestas WhatsApp...");
