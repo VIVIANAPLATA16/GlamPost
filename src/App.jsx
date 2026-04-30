@@ -315,14 +315,6 @@ const TEMAS_DIA = [
   { tema:"Educación", emoji:"💎", idea:"Tip de cuidado en casa para tus clientas" },
 ];
 
-const BACKEND_URL = "https://glampost-backend-fcb2awf3h5fpewcf.eastus-01.azurewebsites.net/api";
-
-function getUserId() {
-  let uid = localStorage.getItem("gp_uid");
-  if (!uid) { uid = "u_" + Math.random().toString(36).slice(2) + Date.now(); localStorage.setItem("gp_uid", uid); }
-  return uid;
-}
-
 const API_URL = import.meta.env.VITE_API_URL || "https://glampost-backend-fcb2awf3h5fpewcf.eastus-01.azurewebsites.net";
 
 function getUserId() {
