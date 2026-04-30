@@ -434,7 +434,7 @@ function parseTikTokResponse(text) {
     const tipo = block.match(/TIKTOK\s*\d+\s*\|\s*([^\n]+)/i)?.[1]?.trim() || "Video";
     const hook = block.match(/HOOK:\s*([^\n]+)/i)?.[1]?.trim() || "";
     const script = block.match(/SCRIPT:\s*([\s\S]*?)(?=MUSICA:|AUDIO:|CAPCUT:|HASHTAGS:|$)/i)?.[1]?.trim() || "";
-    const musica = block.match(/MUSICA:\s*([^\n]+(?:\n(?!CAPCUT:|HASHTAGS:)[^\n]+)*)/i)?.[1]?.trim() || "";
+    const musica = block.match(/(?:MUSICA|AUDIO):\s*([^\n]+(?:\n(?!CAPCUT:|HASHTAGS:)[^\n]+)*)/i)?.[1]?.trim() || "";
     const capcut = block.match(/CAPCUT:\s*([^\n]+(?:\n(?!HASHTAGS:)[^\n]+)*)/i)?.[1]?.trim() || "";
     const hashtags = block.match(/HASHTAGS:\s*([^\n]+)/i)?.[1]?.trim() || "";
     if (hook || script) videos.push({ tipo, hook, script, musica, capcut, hashtags });
