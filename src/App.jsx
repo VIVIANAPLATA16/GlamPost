@@ -380,11 +380,47 @@ Cada caption: emojis relevantes, hashtags colombianos al final, auténtico, menc
 }
 
 function buildCalendarPrompt({ salon, especialidad, servicio, promo, tono }) {
-  return `Eres experta en marketing de salones de belleza en Colombia. Genera un calendario de contenido para Instagram para el salón "${salon}" para 4 semanas (28 días).
+  return `${BEAUTY_EXPERT_CONTEXT}
+
+Genera un calendario de contenido para Instagram para el salón "${salon}" para 4 semanas (28 días).
 Especialidad: ${especialidad}, Servicio: ${servicio}, Promoción: ${promo || "ninguna"}, Tono: ${tono}
 Estructura: ${DIAS_SEMANA.map((d,i) => `${d}: ${TEMAS_DIA[i].tema}`).join(", ")}
 Formato exacto por día:
 DÍA 1 | Lunes | Semana 1 | Motivación\n[caption con emojis y hashtags]\n\nDÍA 2 | Martes | Semana 1 | Servicio\n[caption]\n\n... hasta DÍA 28.`;
+}
+
+function buildTikTokPrompt({ salon, especialidad, servicio, promo, tono }) {
+  return `${BEAUTY_EXPERT_CONTEXT}
+
+Genera 5 scripts de TikTok para el salón "${salon}".
+Especialidad: ${especialidad}, Servicio estrella: ${servicio}, Promoción: ${promo || "Ninguna"}, Tono: ${tono}
+
+Formato exacto:
+TIKTOK 1 | [Tipo: Antes/Después | Tutorial | Tendencia | Testimonio | Oferta]
+HOOK: [Primera frase gancho, máx 10 palabras, que detenga el scroll]
+SCRIPT: [Texto que aparece en pantalla, paso a paso, máx 150 palabras, con emojis]
+AUDIO: [Tipo de audio recomendado: trending, original, voz en off]
+HASHTAGS: [8-10 hashtags TikTok Colombia]
+---
+`;
+}
+
+function parseTikTokResponse(text) {
+  const videos = [];
+  const blocks = text.split("---").filter(b => b.trim().length > 20);
+  for (const block of blocks) {
+    const tipo = block.match(/TIKTOK\s*\d+\s*\|\s*([^
+]+)/i)?.[1]?.trim() || "Video";
+    const hook = block.match(/HOOK:\s*([^
+]+)/i)?.[1]?.trim() || "";
+    const script = block.match(/SCRIPT:\s*([\s\S]*?)(?=AUDIO:|HASHTAGS:|$)/i)?.[1]?.trim() || "";
+    const audio = block.match(/AUDIO:\s*([^
+]+)/i)?.[1]?.trim() || "";
+    const hashtags = block.match(/HASHTAGS:\s*([^
+]+)/i)?.[1]?.trim() || "";
+    if (hook || script) videos.push({ tipo, hook, script, audio, hashtags });
+  }
+  return videos.slice(0, 5);
 }
 
 function buildCanvaPrompt({ salon, especialidad, servicio, tono }) {
@@ -394,13 +430,17 @@ Formato: USO: [nombre]\nPROMPT: [prompt 40-60 palabras en inglés]\nTIP: [consej
 }
 
 function buildStoriesPrompt({ salon, especialidad, servicio, promo }) {
-  return `Genera 4 textos para Instagram Stories para "${salon}". Servicio: ${servicio}, Especialidad: ${especialidad}, Promo: ${promo || "ninguna"}
+  return `${BEAUTY_EXPERT_CONTEXT}
+
+Genera 4 textos para Instagram Stories para "${salon}". Servicio: ${servicio}, Especialidad: ${especialidad}, Promo: ${promo || "ninguna"}
 Tipos: 1.BIENVENIDA SEMANAL 2.ANTES Y DESPUÉS 3.TESTIMONIO 4.LLAMADO A ACCIÓN
 Formato: STORY 1 | [tipo]:\n[texto máx 100 palabras con emojis]\n\nSTORY 2 | [tipo]:\n... hasta STORY 4.`;
 }
 
 function buildWhatsappPrompt({ salon, servicio, especialidad }) {
-  return `Genera 5 respuestas WhatsApp Business para "${salon}". Especialidad: ${especialidad}, Servicio: ${servicio}
+  return `${BEAUTY_EXPERT_CONTEXT}
+
+Genera 5 respuestas WhatsApp Business para "${salon}". Especialidad: ${especialidad}, Servicio: ${servicio}
 Preguntas: 1.¿Cuánto cuesta? 2.¿Citas disponibles? 3.¿Cómo agendar? 4.¿Qué productos usan? 5.¿Hacen domicilios?
 Formato: PREGUNTA: [pregunta]\nRESPUESTA: [respuesta cálida con emojis máx 80 palabras]\n---`;
 }
@@ -529,6 +569,7 @@ function ProLock() {
 
 const ALL_TABS = [
   { id:"posts", label:"📸 Posts IG", pro:false },
+  { id:"tiktok", label:"🎵 TikTok", pro:false },
   { id:"stories", label:"⭕ Stories", pro:false },
   { id:"whatsapp", label:"💬 WhatsApp", pro:false },
   { id:"bio", label:"✨ Bio", pro:false },
@@ -543,6 +584,7 @@ export default function GlamPost() {
   const [loading, setLoading] = useState(false);
   const [loadingStep, setLoadingStep] = useState("");
   const [content, setContent] = useState(null);
+  const [tiktokContent, setTiktokContent] = useState([]);
   const [activeTab, setActiveTab] = useState("posts");
   const [error, setError] = useState("");
   const [uses, setUses] = useState(0);
@@ -612,6 +654,27 @@ export default function GlamPost() {
         <div className="result-text">{p.caption}</div><CopyBtn text={p.caption}/>
       </div>
     ));
+    if (activeTab === "tiktok") return tiktokContent.length > 0 ? tiktokContent.map((v, i) => (
+      <div key={i} className="card" style={{marginBottom:16}}>
+        <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:12}}>
+          <span style={{fontSize:20}}>🎵</span>
+          <span style={{fontWeight:700,color:"var(--pink2)",fontSize:14}}>{v.tipo}</span>
+        </div>
+        <div style={{marginBottom:10}}>
+          <div style={{fontSize:11,color:"var(--muted)",textTransform:"uppercase",letterSpacing:1,marginBottom:4}}>🪝 HOOK — Para el primer segundo</div>
+          <div style={{fontWeight:700,fontSize:16,color:"#fff"}}>{v.hook}</div>
+        </div>
+        <div style={{marginBottom:10}}>
+          <div style={{fontSize:11,color:"var(--muted)",textTransform:"uppercase",letterSpacing:1,marginBottom:4}}>📝 SCRIPT</div>
+          <div style={{fontSize:14,color:"rgba(255,255,255,0.8)",lineHeight:1.7,whiteSpace:"pre-line"}}>{v.script}</div>
+        </div>
+        <div style={{marginBottom:10}}>
+          <div style={{fontSize:11,color:"var(--muted)",textTransform:"uppercase",letterSpacing:1,marginBottom:4}}>🎵 AUDIO RECOMENDADO</div>
+          <div style={{fontSize:13,color:"var(--pink)"}}>{v.audio}</div>
+        </div>
+        <div style={{fontSize:12,color:"var(--muted)"}}>{v.hashtags}</div>
+      </div>
+    )) : <div className="card" style={{textAlign:"center",padding:40}}><div style={{fontSize:40,marginBottom:12}}>🎵</div><p style={{color:"var(--muted)"}}>Genera contenido para ver tus scripts de TikTok</p></div>;
     if (activeTab === "stories") return content.stories.map((s, i) => (
       <div key={i} className="result-item" style={{animationDelay:`${i*0.06}s`}}>
         <div className="result-label"><div className="result-num-badge">{i+1}</div>{s.tipo}</div>
