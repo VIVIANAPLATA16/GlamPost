@@ -819,7 +819,7 @@ export default function GlamPost() {
             <div className="badge"><div className="badge-dot"/>🇨🇴 Hecho para Colombia</div>
             <div className="hero-glow-text">GLAMPOST</div>
             <h2 className="hero-title">Vende más en Instagram<br/><span className="grad">con IA que entiende de belleza</span></h2>
-            <p className="hero-sub">Genera contenido para Instagram y TikTok con IA que entiende de belleza. Los prompts los copias en Canva IA o CapCut IA y el video se hace solo.</p>
+            <p className="hero-sub">Posts, stories, calendario, TikTok scripts y prompts para Canva IA o CapCut IA. Todo listo en segundos.</p>
             <div className="hero-ctas">
               <a href="#generador" className="btn-generate" style={{width:"auto",marginTop:0,textDecoration:"none",padding:"18px 32px"}}>✨ PROBAR GRATIS · {usesLeft} USOS</a>
               <a href={CONFIG.WOMPI_LINK} target="_blank" rel="noopener noreferrer" className="btn-hero-secondary">💎 PRO · ${CONFIG.PRICE_MENSUAL}/mes</a>
