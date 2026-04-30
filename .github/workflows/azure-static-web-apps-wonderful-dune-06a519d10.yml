@@ -21,7 +21,7 @@ jobs:
         id: builddeploy
         uses: Azure/static-web-apps-deploy@v1
         env:
-          VITE_API_URL: ${{ secrets.VITE_API_URL }}
+          VITE_API_URL: ${{ secrets.VITE_API_URL || 'https://glampost-backend-fcb2awf3h5fpewcf.eastus-01.azurewebsites.net' }}
         with:
           azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN_WONDERFUL_DUNE_06A519D10 }}
           repo_token: ${{ secrets.GITHUB_TOKEN }}
