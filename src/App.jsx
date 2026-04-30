@@ -832,9 +832,8 @@ export default function GlamPost() {
             <input className="wsp-input" placeholder="WhatsApp de tu clienta (+57 300 000 0000)" value={wspNum} onChange={e=>setWspNum(e.target.value)}/>
           </div>
           <button onClick={sendWeeklyWhatsApp} className="btn-wsp" disabled={sendingWhatsapp}>
-            {sendingWhatsapp ? "⏳ ENVIANDO..." : "💬 ENVIAR PLANTILLA WHATSAPP API"}
+            {sendingWhatsapp ? "⏳ Enviando..." : "✨ Enviar Contenido Automático"}
           </button>
-          <a href={`https://wa.me/${wspNum.replace(/\D/g,"")}?text=${msg}`} target="_blank" rel="noopener noreferrer" className="btn-wsp" style={{marginTop:10,background:"linear-gradient(135deg,#5A2D8A,#784BA0)"}}>↗ Abrir envío manual (fallback)</a>
           {whatsappStatus && <div className="info-box" style={{marginTop:12}}>{whatsappStatus}</div>}
           <div className="wsp-schedule"><strong>💡 Consejo Pro:</strong> Envía cada lunes antes de las 9am. <strong>Así funciona el modelo de suscripción mensual.</strong></div>
         </div>
