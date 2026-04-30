@@ -392,7 +392,7 @@ Formato exacto para cada video:
 TIKTOK 1 | [Tipo: Antes/Después | Tutorial | Tendencia | Testimonio | Oferta]
 HOOK: [Primera frase gancho, máx 10 palabras, que detenga el scroll]
 SCRIPT: [Texto que aparece en pantalla, paso a paso, máx 150 palabras, con emojis]
-MUSICA: [Recomienda 2-3 canciones específicas trending en TikTok Colombia que peguen con este video. Ejemplo: "Tití Me Preguntó - Bad Bunny", "Puntería - Shakira ft. Cardi B", "La Bebe - Yng Lvcas". Escoge según el mood del video.]
+MUSICA: [Recomienda 2-3 canciones específicas que sean tendencia global en TikTok este 2026 y que encajen con el mood de este video, incluye artista y nombre del tema]
 CAPCUT: [Prompt en español para CapCut IA: describe exactamente qué tipo de video generar, efectos, transiciones, colores, estilo de edición. Ej: "Video aesthetic de salón de belleza con transición suave, colores rosados pastel, texto animado en blanco, efecto de brillo en el resultado final"]
 HASHTAGS: [8-10 hashtags TikTok Colombia]
 ---
