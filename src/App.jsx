@@ -669,6 +669,35 @@ export default function GlamPost() {
     }
   };
 
+  const sendWelcomeWhatsApp = async () => {
+    const to = wspNum.replace(/\D/g, "");
+    if (to.length < 10) {
+      setError("Ingresa un número de WhatsApp válido.");
+      return;
+    }
+
+    setWhatsappStatus("");
+    setSendingWhatsapp(true);
+    try {
+      const res = await fetch(`${API_BASE}/api/send-whatsapp`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          to,
+          templateKey: "welcome",
+          text: `¡Hola! Te damos la bienvenida a GlamPost 💅`,
+        }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data?.error || "No se pudo enviar bienvenida por WhatsApp");
+      setWhatsappStatus("✅ Plantilla de bienvenida enviada correctamente.");
+    } catch (err) {
+      setWhatsappStatus(`⚠ ${err.message}`);
+    } finally {
+      setSendingWhatsapp(false);
+    }
+  };
+
   const generate = async () => {
     if (!form.salon || !form.especialidad || !form.servicio) { setError("Completa: nombre del salón, especialidad y servicio."); return; }
     if (!isPro && uses >= CONFIG.FREE_USES) { setShowPaywall(true); return; }
@@ -831,9 +860,14 @@ export default function GlamPost() {
           <div className="wsp-form-row">
             <input className="wsp-input" placeholder="WhatsApp de tu clienta (+57 300 000 0000)" value={wspNum} onChange={e=>setWspNum(e.target.value)}/>
           </div>
-          <button onClick={sendWeeklyWhatsApp} className="btn-wsp" disabled={sendingWhatsapp}>
-            {sendingWhatsapp ? "⏳ Enviando..." : "✨ Enviar Contenido Automático"}
-          </button>
+          <div style={{display:"grid",gridTemplateColumns:"1fr",gap:10}}>
+            <button onClick={sendWelcomeWhatsApp} className="btn-wsp" disabled={sendingWhatsapp}>
+              {sendingWhatsapp ? "⏳ Enviando..." : "👋 Enviar Bienvenida"}
+            </button>
+            <button onClick={sendWeeklyWhatsApp} className="btn-wsp" disabled={sendingWhatsapp}>
+              {sendingWhatsapp ? "⏳ Enviando..." : "✨ Enviar Contenido Automático"}
+            </button>
+          </div>
           {whatsappStatus && <div className="info-box" style={{marginTop:12}}>{whatsappStatus}</div>}
           <div className="wsp-schedule"><strong>💡 Consejo Pro:</strong> Envía cada lunes antes de las 9am. <strong>Así funciona el modelo de suscripción mensual.</strong></div>
         </div>
