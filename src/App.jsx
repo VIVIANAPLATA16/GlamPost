@@ -405,6 +405,38 @@ HASHTAGS: [8-10 hashtags TikTok Colombia]
 `;
 }
 
+function buildTikTokCanvaPrompt({ salon, especialidad, servicio, tono }) {
+  const estiloMap = { "profesional y cálido": "warm golden tones, soft elegant lighting, professional beauty salon", "divertido y fresco": "bright vibrant colors, fun energetic, gen-z aesthetic", "lujoso y exclusivo": "luxury black and gold, dramatic cinematic lighting, high-end", "cercano y familiar": "warm natural light, cozy friendly, pastel colors", "moderno y minimalista": "clean minimalist white, modern aesthetic, sharp lines" };
+  return `${BEAUTY_EXPERT_CONTEXT}
+
+Genera 6 prompts visuales en inglés para crear videos/imágenes de TikTok para el salón "${salon}".
+Especialidad: ${especialidad}, Servicio: ${servicio}, Estilo visual: ${estiloMap[tono]||estiloMap["profesional y cálido"]}
+
+Formato exacto para cada prompt:
+USO: [para qué tipo de video TikTok]
+PROMPT: [prompt de 40-60 palabras en inglés para CapCut IA, Canva, o Adobe Firefly - describe la escena, iluminación, ángulo de cámara, ambiente]
+TIP: [consejo en español para filmar o editar este video]
+---
+
+Tipos de video: 1.Antes y Después (split screen) 2.Tutorial paso a paso 3.Ambiente del salón (aesthetic) 4.Resultado final del servicio 5.Testimonio de clienta 6.Tendencia del mes`;
+}
+
+function parseTikTokCanvaResponse(text) {
+  const prompts = [];
+  const blocks = text.split("---").filter(b => b.trim().length > 20);
+  for (const block of blocks) {
+    const uso = block.match(/USO:\s*([^
+]+)/i)?.[1]?.trim() || "";
+    const prompt = block.match(/PROMPT:\s*([\s\S]*?)(?=TIP:|---|
+
+|$)/i)?.[1]?.trim() || "";
+    const tip = block.match(/TIP:\s*([^
+]+)/i)?.[1]?.trim() || "";
+    if (prompt) prompts.push({ uso, prompt, tip });
+  }
+  return prompts.slice(0, 6);
+}
+
 function parseTikTokResponse(text) {
   const videos = [];
   const blocks = text.split("---").filter(b => b.trim().length > 20);
@@ -585,6 +617,7 @@ export default function GlamPost() {
   const [loadingStep, setLoadingStep] = useState("");
   const [content, setContent] = useState(null);
   const [tiktokContent, setTiktokContent] = useState([]);
+  const [tiktokCanva, setTiktokCanva] = useState([]);
   const [activeTab, setActiveTab] = useState("posts");
   const [error, setError] = useState("");
   const [uses, setUses] = useState(0);
@@ -631,6 +664,9 @@ export default function GlamPost() {
         calendar = parseCalendarResponse(await callClaude(buildCalendarPrompt(form)));
         setLoadingStep("🎨 Generando prompts para Canva IA...");
         canva = parseCanvaResponse(await callClaude(buildCanvaPrompt(form)));
+        setLoadingStep("🎵 Generando prompts visuales para TikTok...");
+        const tiktokCanvaData = parseTikTokCanvaResponse(await callClaude(buildTikTokCanvaPrompt(form)));
+        setTiktokCanva(tiktokCanvaData);
       }
       const newUses = isPro ? uses : uses + 1;
       if (!isPro) { localStorage.setItem("gp_uses", String(newUses)); setUses(newUses); }
@@ -675,6 +711,46 @@ export default function GlamPost() {
         <div style={{fontSize:12,color:"var(--muted)"}}>{v.hashtags}</div>
       </div>
     )) : <div className="card" style={{textAlign:"center",padding:40}}><div style={{fontSize:40,marginBottom:12}}>🎵</div><p style={{color:"var(--muted)"}}>Genera contenido para ver tus scripts de TikTok</p></div>;
+    if (activeTab === "tiktok" && tiktokCanva.length > 0) return (
+      <>
+        {tiktokContent.map((v, i) => (
+          <div key={i} className="card" style={{marginBottom:16}}>
+            <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:12}}>
+              <span style={{fontSize:20}}>🎵</span>
+              <span style={{fontWeight:700,color:"var(--pink2)",fontSize:14}}>{v.tipo}</span>
+            </div>
+            <div style={{marginBottom:10}}>
+              <div style={{fontSize:11,color:"var(--muted)",textTransform:"uppercase",letterSpacing:1,marginBottom:4}}>🪝 HOOK</div>
+              <div style={{fontWeight:700,fontSize:16,color:"#fff"}}>{v.hook}</div>
+            </div>
+            <div style={{marginBottom:10}}>
+              <div style={{fontSize:11,color:"var(--muted)",textTransform:"uppercase",letterSpacing:1,marginBottom:4}}>📝 SCRIPT</div>
+              <div style={{fontSize:14,color:"rgba(255,255,255,0.8)",lineHeight:1.7,whiteSpace:"pre-line"}}>{v.script}</div>
+            </div>
+            <div style={{marginBottom:10}}>
+              <div style={{fontSize:11,color:"var(--muted)",textTransform:"uppercase",letterSpacing:1,marginBottom:4}}>🎵 AUDIO</div>
+              <div style={{fontSize:13,color:"var(--pink)"}}>{v.audio}</div>
+            </div>
+            <div style={{fontSize:12,color:"var(--muted)"}}>{v.hashtags}</div>
+          </div>
+        ))}
+        {isPro && tiktokCanva.length > 0 && (
+          <div style={{marginTop:8}}>
+            <div style={{fontFamily:"'Syne',sans-serif",fontWeight:800,fontSize:16,marginBottom:16,color:"var(--pink2)"}}>🎬 Prompts visuales para tus videos</div>
+            {tiktokCanva.map((p, i) => (
+              <div key={i} className="card" style={{marginBottom:12}}>
+                <div style={{fontSize:11,color:"var(--pink)",textTransform:"uppercase",letterSpacing:1,marginBottom:6,fontWeight:700}}>{p.uso}</div>
+                <div style={{background:"rgba(255,255,255,0.04)",borderRadius:10,padding:"12px 14px",marginBottom:8}}>
+                  <div style={{fontSize:11,color:"var(--muted)",marginBottom:4}}>📋 Copia en CapCut IA / Canva / Firefly:</div>
+                  <div style={{fontSize:13,color:"rgba(255,255,255,0.9)",fontFamily:"monospace",lineHeight:1.6}}>{p.prompt}</div>
+                </div>
+                <div style={{fontSize:12,color:"var(--pink2)"}}>💡 {p.tip}</div>
+              </div>
+            ))}
+          </div>
+        )}
+      </>
+    );
     if (activeTab === "stories") return content.stories.map((s, i) => (
       <div key={i} className="result-item" style={{animationDelay:`${i*0.06}s`}}>
         <div className="result-label"><div className="result-num-badge">{i+1}</div>{s.tipo}</div>
