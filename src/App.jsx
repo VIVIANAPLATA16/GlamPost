@@ -315,50 +315,83 @@ const TEMAS_DIA = [
   { tema:"Educación", emoji:"💎", idea:"Tip de cuidado en casa para tus clientas" },
 ];
 
-const API_URL = import.meta.env.VITE_API_URL || "https://glampost-backend-fcb2awf3h5fpewcf.eastus-01.azurewebsites.net";
+const API_BASE = import.meta.env.VITE_API_URL ||
+  "https://glampost-backend-fcb2awf3h5fpewcf.eastus-01.azurewebsites.net";
 
-function getUserId() {
-  let uid = localStorage.getItem("gp_uid");
-  if (!uid) { uid = "u_" + Math.random().toString(36).slice(2) + Date.now(); localStorage.setItem("gp_uid", uid); }
-  return uid;
+function getOrCreateUserId() {
+  let userId = localStorage.getItem("gp_user_id");
+  if (!userId) {
+    userId = "u_" + Math.random().toString(36).slice(2) + Date.now();
+    localStorage.setItem("gp_user_id", userId);
+  }
+  return userId;
 }
 
 async function apiAuth() {
-  try {
-    const res = await fetch(`${API_URL}/api/auth`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ userId: getUserId() }),
-    });
-    if (!res.ok) return null;
-    return await res.json();
-  } catch { return null; }
+  const userId = getOrCreateUserId();
+  const res = await fetch(`${API_BASE}/api/auth`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ userId }),
+  });
+  if (!res.ok) throw new Error(`auth ${res.status}`);
+  const data = await res.json();
+  if (data.token) localStorage.setItem("gp_token", data.token);
+  return data;
 }
 
 async function callClaudeStream(prompt, onChunk, signal) {
-  const userId = getUserId();
-  const res = await fetch(`${API_URL}/api/generate`, {
-    method: "POST", signal,
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ prompt, userId, isFreeUse: true }),
+  const userId = getOrCreateUserId();
+  const token = localStorage.getItem("gp_token");
+  if (!token) throw new Error("Sin sesión");
+  const res = await fetch(`${API_BASE}/api/generate`, {
+    method: "POST",
+    signal,
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${token}`,
+    },
+    body: JSON.stringify({ prompt, userId, stream: true }),
   });
-  if (res.status === 403) throw new Error("PAYWALL");
-  if (res.status === 429) throw new Error("RATE_LIMIT");
-  if (!res.ok) throw new Error("API error");
-  const data = await res.json();
-  onChunk(data.content || "");
+  if (res.status === 403) throw Object.assign(new Error("Paywall"), { code: "PAYWALL", status: 403 });
+  if (!res.ok) throw new Error(`generate ${res.status}`);
+  const reader = res.body.getReader();
+  const decoder = new TextDecoder();
+  let buffer = "";
+  while (true) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    buffer += decoder.decode(value, { stream: true });
+    const lines = buffer.split("\n");
+    buffer = lines.pop() || "";
+    for (const line of lines) {
+      const trimmed = line.trim();
+      if (!trimmed.startsWith("data:")) continue;
+      const data = trimmed.slice(5).trim();
+      if (data === "[DONE]") return;
+      try {
+        const parsed = JSON.parse(data);
+        const piece = parsed.choices?.[0]?.delta?.content;
+        if (piece) onChunk(piece);
+      } catch {}
+    }
+  }
 }
 
 async function callClaude(prompt) {
-  const userId = getUserId();
-  const res = await fetch(`${API_URL}/api/generate`, {
+  const userId = getOrCreateUserId();
+  const token = localStorage.getItem("gp_token");
+  if (!token) throw new Error("Sin sesión");
+  const res = await fetch(`${API_BASE}/api/generate`, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ prompt, userId, isFreeUse: true }),
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${token}`,
+    },
+    body: JSON.stringify({ prompt, userId, stream: false }),
   });
-  if (res.status === 403) throw new Error("PAYWALL");
-  if (res.status === 429) throw new Error("RATE_LIMIT");
-  if (!res.ok) throw new Error("API error");
+  if (res.status === 403) throw Object.assign(new Error("Paywall"), { code: "PAYWALL", status: 403 });
+  if (!res.ok) throw new Error(`generate ${res.status}`);
   const data = await res.json();
   return data.content || "";
 }
