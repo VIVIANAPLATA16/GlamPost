@@ -315,31 +315,6 @@ const TEMAS_DIA = [
   { tema:"Educación", emoji:"💎", idea:"Tip de cuidado en casa para tus clientas" },
 ];
 
-const API_BASE = import.meta.env.VITE_API_URL ||
-  "https://glampost-backend-fcb2awf3h5fpewcf.eastus-01.azurewebsites.net";
-
-function getOrCreateUserId() {
-  let userId = localStorage.getItem("gp_user_id");
-  if (!userId) {
-    userId = "u_" + Math.random().toString(36).slice(2) + Date.now();
-    localStorage.setItem("gp_user_id", userId);
-  }
-  return userId;
-}
-
-async function apiAuth() {
-  const userId = getOrCreateUserId();
-  const res = await fetch(`${API_BASE}/api/auth`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ userId }),
-  });
-  if (!res.ok) throw new Error(`auth ${res.status}`);
-  const data = await res.json();
-  if (data.token) localStorage.setItem("gp_token", data.token);
-  return data;
-}
-
 async function callClaudeStream(prompt, onChunk, signal) {
   const endpoint = import.meta.env.VITE_AZURE_OPENAI_ENDPOINT;
   const apiKey = import.meta.env.VITE_AZURE_OPENAI_KEY;
@@ -652,7 +627,6 @@ export default function GlamPost() {
     if (!form.salon || !form.especialidad || !form.servicio) { setError("Completa: nombre del salón, especialidad y servicio."); return; }
     if (!isPro && uses >= CONFIG.FREE_USES) { setShowPaywall(true); return; }
     setError(""); setLoading(true); setContent(null); setStreamText("");
-    try { await apiAuth(); } catch { setError("No se pudo conectar con el servidor. Recarga la página."); setLoading(false); return; }
     abortRef.current = new AbortController();
     try {
       setLoadingStep("✨ Generando posts con IA...");
