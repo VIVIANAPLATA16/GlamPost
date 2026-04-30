@@ -341,20 +341,16 @@ async function apiAuth() {
 }
 
 async function callClaudeStream(prompt, onChunk, signal) {
-  const userId = getOrCreateUserId();
-  const token = localStorage.getItem("gp_token");
-  if (!token) throw new Error("Sin sesión");
-  const res = await fetch(`${API_BASE}/api/generate`, {
-    method: "POST",
-    signal,
-    headers: {
-      "Content-Type": "application/json",
-      "Authorization": `Bearer ${token}`,
-    },
-    body: JSON.stringify({ prompt, userId, stream: true }),
+  const endpoint = import.meta.env.VITE_AZURE_OPENAI_ENDPOINT;
+  const apiKey = import.meta.env.VITE_AZURE_OPENAI_KEY;
+  const deployment = import.meta.env.VITE_AZURE_OPENAI_DEPLOYMENT;
+  const url = `${endpoint}openai/deployments/${deployment}/chat/completions?api-version=2024-02-01`;
+  const res = await fetch(url, {
+    method: "POST", signal,
+    headers: { "Content-Type": "application/json", "api-key": apiKey },
+    body: JSON.stringify({ messages: [{ role: "user", content: prompt }], max_tokens: 1000, stream: true }),
   });
-  if (res.status === 403) throw Object.assign(new Error("Paywall"), { code: "PAYWALL", status: 403 });
-  if (!res.ok) throw new Error(`generate ${res.status}`);
+  if (!res.ok) throw new Error("API error");
   const reader = res.body.getReader();
   const decoder = new TextDecoder();
   let buffer = "";
@@ -363,37 +359,32 @@ async function callClaudeStream(prompt, onChunk, signal) {
     if (done) break;
     buffer += decoder.decode(value, { stream: true });
     const lines = buffer.split("\n");
-    buffer = lines.pop() || "";
+    buffer = lines.pop();
     for (const line of lines) {
-      const trimmed = line.trim();
-      if (!trimmed.startsWith("data:")) continue;
-      const data = trimmed.slice(5).trim();
+      if (!line.startsWith("data:")) continue;
+      const data = line.slice(5).trim();
       if (data === "[DONE]") return;
       try {
         const parsed = JSON.parse(data);
-        const piece = parsed.choices?.[0]?.delta?.content;
-        if (piece) onChunk(piece);
+        const text = parsed.choices?.[0]?.delta?.content;
+        if (text) onChunk(text);
       } catch {}
     }
   }
 }
 
 async function callClaude(prompt) {
-  const userId = getOrCreateUserId();
-  const token = localStorage.getItem("gp_token");
-  if (!token) throw new Error("Sin sesión");
-  const res = await fetch(`${API_BASE}/api/generate`, {
+  const endpoint = import.meta.env.VITE_AZURE_OPENAI_ENDPOINT;
+  const apiKey = import.meta.env.VITE_AZURE_OPENAI_KEY;
+  const deployment = import.meta.env.VITE_AZURE_OPENAI_DEPLOYMENT;
+  const url = `${endpoint}openai/deployments/${deployment}/chat/completions?api-version=2024-02-01`;
+  const res = await fetch(url, {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "Authorization": `Bearer ${token}`,
-    },
-    body: JSON.stringify({ prompt, userId, stream: false }),
+    headers: { "Content-Type": "application/json", "api-key": apiKey },
+    body: JSON.stringify({ messages: [{ role: "user", content: prompt }], max_tokens: 1000 }),
   });
-  if (res.status === 403) throw Object.assign(new Error("Paywall"), { code: "PAYWALL", status: 403 });
-  if (!res.ok) throw new Error(`generate ${res.status}`);
   const data = await res.json();
-  return data.content || "";
+  return data.choices?.[0]?.message?.content || "";
 }
 
 function buildPostsPrompt({ salon, especialidad, servicio, promo, tono }) {
