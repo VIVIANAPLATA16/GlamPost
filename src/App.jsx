@@ -657,6 +657,7 @@ export default function GlamPost() {
       setActiveTab("posts"); setStreamText("");
       if (!isPro && newUses >= CONFIG.FREE_USES) setTimeout(() => setShowPaywall(true), 12000);
     } catch (err) {
+      console.error("Error generando contenido:", err.message, err);
       if (err.name !== "AbortError") setError("Error al conectar con la IA. Por favor intenta de nuevo.");
     } finally {
       setLoading(false); setLoadingStep(""); setIsStreaming(false);
