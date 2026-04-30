@@ -316,9 +316,9 @@ const TEMAS_DIA = [
 ];
 
 async function callClaudeStream(prompt, onChunk, signal) {
-  const endpoint = import.meta.env.VITE_AZURE_OPENAI_ENDPOINT;
+  const endpoint = "https://glamcode-openai.openai.azure.com/";
   const apiKey = import.meta.env.VITE_AZURE_OPENAI_KEY;
-  const deployment = import.meta.env.VITE_AZURE_OPENAI_DEPLOYMENT;
+  const deployment = "gpt-4o";
   const url = `${endpoint}openai/deployments/${deployment}/chat/completions?api-version=2024-02-01`;
   const res = await fetch(url, {
     method: "POST", signal,
@@ -349,9 +349,9 @@ async function callClaudeStream(prompt, onChunk, signal) {
 }
 
 async function callClaude(prompt) {
-  const endpoint = import.meta.env.VITE_AZURE_OPENAI_ENDPOINT;
+  const endpoint = "https://glamcode-openai.openai.azure.com/";
   const apiKey = import.meta.env.VITE_AZURE_OPENAI_KEY;
-  const deployment = import.meta.env.VITE_AZURE_OPENAI_DEPLOYMENT;
+  const deployment = "gpt-4o";
   const url = `${endpoint}openai/deployments/${deployment}/chat/completions?api-version=2024-02-01`;
   const res = await fetch(url, {
     method: "POST",
