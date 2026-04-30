@@ -829,7 +829,7 @@ export default function GlamPost() {
               <div className="proof-divider"/>
               <div className="proof-item"><span className="proof-num">30 días</span><span className="proof-label">Calendario IA</span></div>
               <div className="proof-divider"/>
-              <div className="proof-item"><span className="proof-num">GlamCode AI</span><span className="proof-label">Tu marca propia</span></div>
+              <div className="proof-item"><span className="proof-num">GlamCode AI</span></div>
             </div>
           </div>
 
