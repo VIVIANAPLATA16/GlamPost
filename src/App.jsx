@@ -388,11 +388,12 @@ function buildTikTokPrompt({ salon, especialidad, servicio, promo, tono }) {
 Genera 5 scripts de TikTok para el salón "${salon}".
 Especialidad: ${especialidad}, Servicio estrella: ${servicio}, Promoción: ${promo || "Ninguna"}, Tono: ${tono}
 
-Formato exacto:
+Formato exacto para cada video:
 TIKTOK 1 | [Tipo: Antes/Después | Tutorial | Tendencia | Testimonio | Oferta]
 HOOK: [Primera frase gancho, máx 10 palabras, que detenga el scroll]
 SCRIPT: [Texto que aparece en pantalla, paso a paso, máx 150 palabras, con emojis]
-AUDIO: [Tipo de audio recomendado: trending, original, voz en off]
+MUSICA: [Recomienda 2-3 canciones específicas trending en TikTok Colombia que peguen con este video. Ejemplo: "Tití Me Preguntó - Bad Bunny", "Puntería - Shakira ft. Cardi B", "La Bebe - Yng Lvcas". Escoge según el mood del video.]
+CAPCUT: [Prompt en español para CapCut IA: describe exactamente qué tipo de video generar, efectos, transiciones, colores, estilo de edición. Ej: "Video aesthetic de salón de belleza con transición suave, colores rosados pastel, texto animado en blanco, efecto de brillo en el resultado final"]
 HASHTAGS: [8-10 hashtags TikTok Colombia]
 ---
 `;
@@ -432,10 +433,11 @@ function parseTikTokResponse(text) {
   for (const block of blocks) {
     const tipo = block.match(/TIKTOK\s*\d+\s*\|\s*([^\n]+)/i)?.[1]?.trim() || "Video";
     const hook = block.match(/HOOK:\s*([^\n]+)/i)?.[1]?.trim() || "";
-    const script = block.match(/SCRIPT:\s*([\s\S]*?)(?=AUDIO:|HASHTAGS:|$)/i)?.[1]?.trim() || "";
-    const audio = block.match(/AUDIO:\s*([^\n]+)/i)?.[1]?.trim() || "";
+    const script = block.match(/SCRIPT:\s*([\s\S]*?)(?=MUSICA:|AUDIO:|CAPCUT:|HASHTAGS:|$)/i)?.[1]?.trim() || "";
+    const musica = block.match(/MUSICA:\s*([^\n]+(?:\n(?!CAPCUT:|HASHTAGS:)[^\n]+)*)/i)?.[1]?.trim() || "";
+    const capcut = block.match(/CAPCUT:\s*([^\n]+(?:\n(?!HASHTAGS:)[^\n]+)*)/i)?.[1]?.trim() || "";
     const hashtags = block.match(/HASHTAGS:\s*([^\n]+)/i)?.[1]?.trim() || "";
-    if (hook || script) videos.push({ tipo, hook, script, audio, hashtags });
+    if (hook || script) videos.push({ tipo, hook, script, musica, capcut, hashtags });
   }
   return videos.slice(0, 5);
 }
