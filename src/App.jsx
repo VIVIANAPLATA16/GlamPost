@@ -425,13 +425,9 @@ function parseTikTokCanvaResponse(text) {
   const prompts = [];
   const blocks = text.split("---").filter(b => b.trim().length > 20);
   for (const block of blocks) {
-    const uso = block.match(/USO:\s*([^
-]+)/i)?.[1]?.trim() || "";
-    const prompt = block.match(/PROMPT:\s*([\s\S]*?)(?=TIP:|---|
-
-|$)/i)?.[1]?.trim() || "";
-    const tip = block.match(/TIP:\s*([^
-]+)/i)?.[1]?.trim() || "";
+    const uso = block.match(/USO:\s*([^\n]+)/i)?.[1]?.trim() || "";
+    const prompt = block.match(/PROMPT:\s*([\s\S]*?)(?=TIP:|---|\n\n|$)/i)?.[1]?.trim() || "";
+    const tip = block.match(/TIP:\s*([^\n]+)/i)?.[1]?.trim() || "";
     if (prompt) prompts.push({ uso, prompt, tip });
   }
   return prompts.slice(0, 6);
@@ -441,15 +437,11 @@ function parseTikTokResponse(text) {
   const videos = [];
   const blocks = text.split("---").filter(b => b.trim().length > 20);
   for (const block of blocks) {
-    const tipo = block.match(/TIKTOK\s*\d+\s*\|\s*([^
-]+)/i)?.[1]?.trim() || "Video";
-    const hook = block.match(/HOOK:\s*([^
-]+)/i)?.[1]?.trim() || "";
+    const tipo = block.match(/TIKTOK\s*\d+\s*\|\s*([^\n]+)/i)?.[1]?.trim() || "Video";
+    const hook = block.match(/HOOK:\s*([^\n]+)/i)?.[1]?.trim() || "";
     const script = block.match(/SCRIPT:\s*([\s\S]*?)(?=AUDIO:|HASHTAGS:|$)/i)?.[1]?.trim() || "";
-    const audio = block.match(/AUDIO:\s*([^
-]+)/i)?.[1]?.trim() || "";
-    const hashtags = block.match(/HASHTAGS:\s*([^
-]+)/i)?.[1]?.trim() || "";
+    const audio = block.match(/AUDIO:\s*([^\n]+)/i)?.[1]?.trim() || "";
+    const hashtags = block.match(/HASHTAGS:\s*([^\n]+)/i)?.[1]?.trim() || "";
     if (hook || script) videos.push({ tipo, hook, script, audio, hashtags });
   }
   return videos.slice(0, 5);
