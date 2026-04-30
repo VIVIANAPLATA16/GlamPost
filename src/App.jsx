@@ -316,51 +316,36 @@ const TEMAS_DIA = [
   { tema:"Educación", emoji:"💎", idea:"Tip de cuidado en casa para tus clientas" },
 ];
 
+const BACKEND_URL = "https://glampost-vercel-backend.vercel.app";
+
+function getUserId() {
+  let uid = localStorage.getItem("gp_uid");
+  if (!uid) { uid = "u_" + Math.random().toString(36).slice(2) + Date.now(); localStorage.setItem("gp_uid", uid); }
+  return uid;
+}
+
 async function callClaudeStream(prompt, onChunk, signal) {
-  const endpoint = "https://glamcode-openai.openai.azure.com/";
-  const apiKey = import.meta.env.VITE_AZURE_OPENAI_KEY;
-  const deployment = "gpt-4o";
-  const url = `${endpoint}openai/deployments/${deployment}/chat/completions?api-version=2024-02-01`;
-  const res = await fetch(url, {
+  const res = await fetch(`${BACKEND_URL}/api/generate`, {
     method: "POST", signal,
-    headers: { "Content-Type": "application/json", "api-key": apiKey },
-    body: JSON.stringify({ messages: [{ role: "user", content: prompt }], max_tokens: 1000, stream: true }),
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ prompt, userId: getUserId(), isFreeUse: true }),
   });
+  if (res.status === 429) throw new Error("Límite alcanzado. Espera 1 hora.");
+  if (res.status === 403) throw new Error("PAYWALL");
   if (!res.ok) throw new Error("API error");
-  const reader = res.body.getReader();
-  const decoder = new TextDecoder();
-  let buffer = "";
-  while (true) {
-    const { done, value } = await reader.read();
-    if (done) break;
-    buffer += decoder.decode(value, { stream: true });
-    const lines = buffer.split("\n");
-    buffer = lines.pop();
-    for (const line of lines) {
-      if (!line.startsWith("data:")) continue;
-      const data = line.slice(5).trim();
-      if (data === "[DONE]") return;
-      try {
-        const parsed = JSON.parse(data);
-        const text = parsed.choices?.[0]?.delta?.content;
-        if (text) onChunk(text);
-      } catch {}
-    }
-  }
+  const data = await res.json();
+  onChunk(data.content || "");
 }
 
 async function callClaude(prompt) {
-  const endpoint = "https://glamcode-openai.openai.azure.com/";
-  const apiKey = import.meta.env.VITE_AZURE_OPENAI_KEY;
-  const deployment = "gpt-4o";
-  const url = `${endpoint}openai/deployments/${deployment}/chat/completions?api-version=2024-02-01`;
-  const res = await fetch(url, {
+  const res = await fetch(`${BACKEND_URL}/api/generate`, {
     method: "POST",
-    headers: { "Content-Type": "application/json", "api-key": apiKey },
-    body: JSON.stringify({ messages: [{ role: "user", content: prompt }], max_tokens: 1000 }),
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ prompt, userId: getUserId(), isFreeUse: true }),
   });
+  if (!res.ok) throw new Error("API error");
   const data = await res.json();
-  return data.choices?.[0]?.message?.content || "";
+  return data.content || "";
 }
 
 const BEAUTY_EXPERT_CONTEXT = `Eres GlamCode AI, una inteligencia artificial especialista en belleza y marketing para salones en Colombia. Tu expertise abarca todas las áreas de la belleza: cabello (cortes, colorimetría, keratina, extensiones), uñas (manicure, pedicure, nail art, acrílicas, semipermanente), cejas y pestañas (laminación, diseño, extensiones, microblading), maquillaje (social, novias, artístico), estética facial (tratamientos, limpieza, hidratación), depilación, masajes y spa, barbería, y servicios integrales. Conoces las tendencias actuales en Colombia, los precios del mercado, el lenguaje que usan las clientas colombianas, los hashtags que funcionan, y las mejores estrategias de contenido para redes sociales en el sector belleza. Siempre generas contenido auténtico, cercano, que convierte seguidoras en clientas.`;
