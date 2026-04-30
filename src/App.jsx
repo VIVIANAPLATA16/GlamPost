@@ -628,6 +628,7 @@ export default function GlamPost() {
     if (!form.salon || !form.especialidad || !form.servicio) { setError("Completa: nombre del salón, especialidad y servicio."); return; }
     if (!isPro && uses >= CONFIG.FREE_USES) { setShowPaywall(true); return; }
     setError(""); setLoading(true); setContent(null); setStreamText("");
+    try { await apiAuth(); } catch { setError("No se pudo conectar con el servidor. Recarga la página."); setLoading(false); return; }
     abortRef.current = new AbortController();
     try {
       setLoadingStep("✨ Generando posts con IA...");
