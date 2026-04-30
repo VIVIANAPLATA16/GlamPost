@@ -88,6 +88,7 @@ const CONFIG = {
   PRICE_UNICO: "19.900",
   WHATSAPP: "573001234567",
 };
+const API_BASE = import.meta.env.VITE_API_URL || "https://glampost-backend-fcb2awf3h5fpewcf.eastus-01.azurewebsites.net";
 
 const css = `
   @import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Inter:wght@300;400;500;600&display=swap');
@@ -528,6 +529,12 @@ function buildWhatsAppMsg(form, posts) {
   return encodeURIComponent(`━━━━━━━━━━━━━━━━━━\n✨ CONTENIDO SEMANA - ${form.salon.toUpperCase()}\n━━━━━━━━━━━━━━━━━━\n\n📸 POST 1:\n${posts[0]?.caption||""}\n\n━━━━━━━━━━━━━━━━━━\n\n📸 POST 2:\n${posts[1]?.caption||""}\n\n━━━━━━━━━━━━━━━━━━\n\n📸 POST 3:\n${posts[2]?.caption||""}\n\n━━━━━━━━━━━━━━━━━━\n💅 Generado con GlamPost IA`);
 }
 
+function buildWeeklyWhatsAppText(form, posts) {
+  const p1 = posts?.[0]?.caption || "";
+  const p2 = posts?.[1]?.caption || "";
+  return `Contenido semanal listo para ${form.salon}. Post 1: ${p1.slice(0, 120)} ${p2 ? `| Post 2: ${p2.slice(0, 90)}` : ""}`;
+}
+
 function CopyBtn({ text }) {
   const [ok, setOk] = useState(false);
   return (
@@ -614,6 +621,8 @@ export default function GlamPost() {
   const [streamText, setStreamText] = useState("");
   const [isStreaming, setIsStreaming] = useState(false);
   const [isDemo, setIsDemo] = useState(false);
+  const [sendingWhatsapp, setSendingWhatsapp] = useState(false);
+  const [whatsappStatus, setWhatsappStatus] = useState("");
   const isDemoUrl = typeof window !== "undefined" && new URLSearchParams(window.location.search).get("demo") === "viviana";
   const abortRef = useRef(null);
 
@@ -626,6 +635,39 @@ export default function GlamPost() {
 
   const onChange = e => setForm(f => ({ ...f, [e.target.name]: e.target.value }));
   const usesLeft = Math.max(0, CONFIG.FREE_USES - uses);
+
+  const sendWeeklyWhatsApp = async () => {
+    if (!content?.posts?.length) {
+      setError("Primero genera contenido para poder enviarlo por WhatsApp.");
+      return;
+    }
+    const to = wspNum.replace(/\D/g, "");
+    if (to.length < 10) {
+      setError("Ingresa un número de WhatsApp válido.");
+      return;
+    }
+
+    setWhatsappStatus("");
+    setSendingWhatsapp(true);
+    try {
+      const res = await fetch(`${API_BASE}/api/send-whatsapp`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          to,
+          templateKey: "weekly",
+          text: buildWeeklyWhatsAppText(form, content.posts),
+        }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data?.error || "No se pudo enviar por WhatsApp");
+      setWhatsappStatus("✅ Enviado por WhatsApp API correctamente.");
+    } catch (err) {
+      setWhatsappStatus(`⚠ ${err.message}`);
+    } finally {
+      setSendingWhatsapp(false);
+    }
+  };
 
   const generate = async () => {
     if (!form.salon || !form.especialidad || !form.servicio) { setError("Completa: nombre del salón, especialidad y servicio."); return; }
@@ -789,7 +831,11 @@ export default function GlamPost() {
           <div className="wsp-form-row">
             <input className="wsp-input" placeholder="WhatsApp de tu clienta (+57 300 000 0000)" value={wspNum} onChange={e=>setWspNum(e.target.value)}/>
           </div>
-          <a href={`https://wa.me/${wspNum.replace(/\D/g,"")}?text=${msg}`} target="_blank" rel="noopener noreferrer" className="btn-wsp">💬 ENVIAR CONTENIDO AHORA POR WHATSAPP</a>
+          <button onClick={sendWeeklyWhatsApp} className="btn-wsp" disabled={sendingWhatsapp}>
+            {sendingWhatsapp ? "⏳ ENVIANDO..." : "💬 ENVIAR PLANTILLA WHATSAPP API"}
+          </button>
+          <a href={`https://wa.me/${wspNum.replace(/\D/g,"")}?text=${msg}`} target="_blank" rel="noopener noreferrer" className="btn-wsp" style={{marginTop:10,background:"linear-gradient(135deg,#5A2D8A,#784BA0)"}}>↗ Abrir envío manual (fallback)</a>
+          {whatsappStatus && <div className="info-box" style={{marginTop:12}}>{whatsappStatus}</div>}
           <div className="wsp-schedule"><strong>💡 Consejo Pro:</strong> Envía cada lunes antes de las 9am. <strong>Así funciona el modelo de suscripción mensual.</strong></div>
         </div>
       );
