@@ -392,7 +392,7 @@ Formato exacto para cada video:
 TIKTOK 1 | [Tipo: Antes/Después | Tutorial | Tendencia | Testimonio | Oferta]
 HOOK: [Primera frase gancho, máx 10 palabras, que detenga el scroll]
 SCRIPT: [Texto que aparece en pantalla, paso a paso, máx 150 palabras, con emojis]
-MUSICA: [Recomienda 2-3 canciones específicas que sean tendencia global en TikTok este 2026 y que encajen con el mood de este video, incluye artista y nombre del tema]
+AUDIO RECOMENDADO: [Recomienda 2-3 canciones específicas que sean tendencia global en TikTok este 2026 y que encajen con el mood de este video, incluye artista y nombre del tema]
 CAPCUT: [Prompt en español para CapCut IA: describe exactamente qué tipo de video generar, efectos, transiciones, colores, estilo de edición. Ej: "Video aesthetic de salón de belleza con transición suave, colores rosados pastel, texto animado en blanco, efecto de brillo en el resultado final"]
 HASHTAGS: [8-10 hashtags TikTok Colombia]
 ---
@@ -433,8 +433,8 @@ function parseTikTokResponse(text) {
   for (const block of blocks) {
     const tipo = block.match(/TIKTOK\s*\d+\s*\|\s*([^\n]+)/i)?.[1]?.trim() || "Video";
     const hook = block.match(/HOOK:\s*([^\n]+)/i)?.[1]?.trim() || "";
-    const script = block.match(/SCRIPT:\s*([\s\S]*?)(?=MUSICA:|AUDIO:|CAPCUT:|HASHTAGS:|$)/i)?.[1]?.trim() || "";
-    const musica = block.match(/(?:MUSICA|AUDIO):\s*([^\n]+(?:\n(?!CAPCUT:|HASHTAGS:)[^\n]+)*)/i)?.[1]?.trim() || "";
+    const script = block.match(/SCRIPT:\s*([\s\S]*?)(?=MÚSICA:|MUSICA:|AUDIO(?:\s+RECOMENDADO)?:|CAPCUT:|HASHTAGS:|$)/i)?.[1]?.trim() || "";
+    const musica = block.match(/(?:MÚSICA|MUSICA|AUDIO(?:\s+RECOMENDADO)?):\s*([^\n]+(?:\n(?!CAPCUT:|HASHTAGS:)[^\n]+)*)/i)?.[1]?.trim() || "";
     const capcut = block.match(/CAPCUT:\s*([^\n]+(?:\n(?!HASHTAGS:)[^\n]+)*)/i)?.[1]?.trim() || "";
     const hashtags = block.match(/HASHTAGS:\s*([^\n]+)/i)?.[1]?.trim() || "";
     if (hook || script) videos.push({ tipo, hook, script, musica, capcut, hashtags });
@@ -681,37 +681,16 @@ export default function GlamPost() {
         <div className="result-text">{p.caption}</div><CopyBtn text={p.caption}/>
       </div>
     ));
-    if (activeTab === "tiktok") return tiktokContent.length > 0 ? tiktokContent.map((v, i) => (
-      <div key={i} className="card" style={{marginBottom:16}}>
-        <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:12}}>
-          <span style={{fontSize:20}}>🎵</span>
-          <span style={{fontWeight:700,color:"var(--pink2)",fontSize:14}}>{v.tipo}</span>
-        </div>
-        <div style={{marginBottom:10}}>
-          <div style={{fontSize:11,color:"var(--muted)",textTransform:"uppercase",letterSpacing:1,marginBottom:4}}>🪝 HOOK — Para el primer segundo</div>
-          <div style={{fontWeight:700,fontSize:16,color:"#fff"}}>{v.hook}</div>
-        </div>
-        <div style={{marginBottom:10}}>
-          <div style={{fontSize:11,color:"var(--muted)",textTransform:"uppercase",letterSpacing:1,marginBottom:4}}>📝 SCRIPT</div>
-          <div style={{fontSize:14,color:"rgba(255,255,255,0.8)",lineHeight:1.7,whiteSpace:"pre-line"}}>{v.script}</div>
-        </div>
-        <div style={{marginBottom:10}}>
-          <div style={{fontSize:11,color:"var(--muted)",textTransform:"uppercase",letterSpacing:1,marginBottom:4}}>🎵 AUDIO RECOMENDADO</div>
-          <div style={{fontSize:13,color:"var(--pink)"}}>{v.audio}</div>
-        </div>
-        <div style={{fontSize:12,color:"var(--muted)"}}>{v.hashtags}</div>
-      </div>
-    )) : <div className="card" style={{textAlign:"center",padding:40}}><div style={{fontSize:40,marginBottom:12}}>🎵</div><p style={{color:"var(--muted)"}}>Genera contenido para ver tus scripts de TikTok</p></div>;
-    if (activeTab === "tiktok" && tiktokCanva.length > 0) return (
+    if (activeTab === "tiktok") return (
       <>
-        {tiktokContent.map((v, i) => (
+        {tiktokContent.length > 0 ? tiktokContent.map((v, i) => (
           <div key={i} className="card" style={{marginBottom:16}}>
             <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:12}}>
               <span style={{fontSize:20}}>🎵</span>
               <span style={{fontWeight:700,color:"var(--pink2)",fontSize:14}}>{v.tipo}</span>
             </div>
             <div style={{marginBottom:10}}>
-              <div style={{fontSize:11,color:"var(--muted)",textTransform:"uppercase",letterSpacing:1,marginBottom:4}}>🪝 HOOK</div>
+              <div style={{fontSize:11,color:"var(--muted)",textTransform:"uppercase",letterSpacing:1,marginBottom:4}}>🪝 HOOK — Para el primer segundo</div>
               <div style={{fontWeight:700,fontSize:16,color:"#fff"}}>{v.hook}</div>
             </div>
             <div style={{marginBottom:10}}>
@@ -719,12 +698,18 @@ export default function GlamPost() {
               <div style={{fontSize:14,color:"rgba(255,255,255,0.8)",lineHeight:1.7,whiteSpace:"pre-line"}}>{v.script}</div>
             </div>
             <div style={{marginBottom:10}}>
-              <div style={{fontSize:11,color:"var(--muted)",textTransform:"uppercase",letterSpacing:1,marginBottom:4}}>🎵 AUDIO</div>
-              <div style={{fontSize:13,color:"var(--pink)"}}>{v.audio}</div>
+              <div style={{fontSize:11,color:"var(--muted)",textTransform:"uppercase",letterSpacing:1,marginBottom:4}}>🎵 AUDIO RECOMENDADO</div>
+              <div style={{fontSize:13,color:"var(--pink)"}}>{v.musica}</div>
             </div>
             <div style={{fontSize:12,color:"var(--muted)"}}>{v.hashtags}</div>
           </div>
-        ))}
+        )) : (
+          <div className="card" style={{textAlign:"center",padding:40}}>
+            <div style={{fontSize:40,marginBottom:12}}>🎵</div>
+            <p style={{color:"var(--muted)"}}>Genera contenido para ver tus scripts de TikTok</p>
+          </div>
+        )}
+
         {isPro && tiktokCanva.length > 0 && (
           <div style={{marginTop:8}}>
             <div style={{fontFamily:"'Syne',sans-serif",fontWeight:800,fontSize:16,marginBottom:16,color:"var(--pink2)"}}>🎬 Prompts visuales para tus videos</div>
