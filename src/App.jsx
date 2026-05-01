@@ -88,7 +88,7 @@ const CONFIG = {
   PRICE_UNICO: "19.900",
   WHATSAPP: "573001234567",
 };
-const API_BASE = import.meta.env.VITE_API_URL || "https://glampost-backend-fcb2awf3h5fpewcf.eastus-01.azurewebsites.net";
+const API_BASE = import.meta.env.VITE_API_URL || "https://glampost-vercel-backend.vercel.app";
 
 const css = `
   @import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Inter:wght@300;400;500;600&display=swap');
